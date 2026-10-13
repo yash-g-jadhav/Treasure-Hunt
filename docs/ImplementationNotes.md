@@ -1,29 +1,27 @@
 # Implementation Notes
 
-## Source specification boundaries
+## Decisions made where source design files were unavailable
 
-The provided one-shot build specification says `Rules.md`, `Architecture.md`, and `Design.md` were referenced by the source roadmap but not supplied. Their contents and exact object coordinates therefore could not be reproduced. The three levels are hand-authored in `GameModel.createLevel` with coordinates and object counts chosen for the stated completion requirements.
+- The build specification references `Rules.md`, `Architecture.md`, and `Design.md`, but those files were not present. The game therefore uses hand-authored coordinates in `GameModel.createLevel`, with three orthogonal grid-trail networks and optional branches.
+- The required language is Java 17+. The implementation has no third-party runtime dependencies so it can compile and run in an offline environment.
+- The renderer uses Swing/Java2D rather than LWJGL/GLFW/OpenGL 3.3/GLSL. This is a known specification deviation, not an equivalent implementation of the required OpenGL pipeline.
+- The game uses a lightweight `GameModel` plus a Java2D `GamePanel`, not a full ECS. Interactable objects are handled once per interaction and the nearest eligible object is selected to avoid activating multiple nearby objects at once.
+- The grid map reveals cells around the player. Level navigation remains free-roaming with AABB collision rather than tile-step movement; grid paths are the visual exploration structure.
+- NPC dialogue choices use number keys 1–3 or mouse clicks. The cartographer teaches the Thorn → Sun sequence for the Level 2 gate. The crown constellation uses Wave → Thorn → Sun. Wrong inputs reset the sequence.
+- Mara's supply choice grants a rusty key that opens the Level 1 hidden wall. Optional caches provide evidence/items; the Keeper's Promise plus the Keeper's Seal enables the true ending.
+- Local progress is stored as a small properties file at `~/.the-lost-vault/save.properties`. It stores the highest unlocked level and known clue IDs. It does not serialize exact player position, collected gems, inventory, or puzzle state.
+- Sound effects are synthesized locally using Java Sound and fail silently if no output line is available. Background music is omitted.
 
-## Environment-driven rendering choice
+## Reliability details
 
-No existing game repository was mounted in the workspace. The environment has JDK 21 but no installed Gradle and cannot resolve external hosts, so Gradle Wrapper distribution files and LWJGL dependencies could not be fetched. To make the game and headless regression suite runnable without network access, the delivered implementation uses Java2D in one Swing panel. It is a deliberate and documented deviation from the requested LWJGL 3 / GLFW / OpenGL 3.3 stack, not a claim that those graphics requirements were met.
+- `Rect` and `UnlockCondition` remain small deterministic value/rule objects.
+- Movement uses normalized vectors, delta time, and axis-separated obstacle resolution.
+- Level progression is explicitly ordered. A gate needs its clue condition and puzzle solution; the Vault needs all clues and its constellation solution; the boat requires treasure.
+- Collectible IDs are stable and duplicate collection is ignored.
+- The test harness is dependency-free so it can run with only a JDK in offline environments.
 
-The `gradlew` shell script delegates to Gradle if installed; otherwise it provides an offline JDK-only fallback for build/test/run tasks. It is not the official Gradle Wrapper JAR/distribution. The graphical app was launched under Xvfb for a Main Menu → Level 1 smoke test, but no complete human-controlled playthrough was performed.
+## Known limitations
 
-## Gameplay choices
-
-- Coordinates are world units with top-left origin; the world is 1800 × 1200 units.
-- Level exits require their listed gem/clue/gate objectives.
-- Level 3's Vault requires Clues A, B, and C gathered during the current expedition. The gem threshold is zero beyond the level's own four-gem completion requirement.
-- The rescue boat requires treasure collection and an explicit interaction.
-- Gems and clues are retained on ordinary respawn; exhausting all lives restarts the current level and clears that level's clue/gem attempt progress.
-- Checkpoints are represented as one-use touch triggers, with the initial spawn as checkpoint 0.
-- Audio and save persistence are omitted because they are optional in the supplied specification.
-
-
-## October 2026 exploration/story revision
-
-- Replaced the three-segment diagonal trail with an orthogonal grid network: intersections, loops, optional branches, junction stones, and a subtle cartographer grid. The three level themes use different branching route arrangements.
-- Expanded the narrative into a connected mystery around Captain Elias Vale, the summoned storm, the Wave/Thorn/Sun clues, the betrayed tyrant, and the escape route. NPC dialogue now provides actionable field leads; clue fragments provide map and route hints.
-- Updated README controls and exploration instructions. Existing interaction, dialogue, and journal mechanics are reused; no external assets or dependencies were introduced.
-- Verification: Java source compilation with `javac -Xlint:all` and all 35 dependency-free gameplay regression checks were rerun after the changes.
+- OpenGL shader pipeline and native-resource lifecycle from the original spec are not implemented because this version uses Java2D.
+- There is no background music or controller support.
+- The full game has been tested through deterministic model integration tests; manual graphical playthrough and level-balance review remain necessary.

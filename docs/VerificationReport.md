@@ -1,40 +1,32 @@
 # Verification Report
 
-Verification performed in the supplied execution environment on 2026-10-13.
-
 ## Environment
 
-- OpenJDK 21.0.12; source/target compatibility set to Java 17.
-- No existing game repository was mounted; this project was created in `/mnt/data/the-lost-vault`.
-- No system Gradle installation and no outbound DNS/network access were available. The included `gradlew` therefore used its documented JDK-only offline fallback; it is not the official Gradle Wrapper distribution.
-- Xvfb was available for a virtual display.
+- OpenJDK 21.0.12.1 available.
+- Gradle is not installed in the execution environment.
+- An Xvfb virtual display is available for a graphical launch smoke test.
+- The delivered launch scripts use the JDK fallback when Gradle is unavailable.
 
-## Commands and outcomes
+## Commands run
 
-| Command / check | Outcome |
-|---|---|
-| `./gradlew clean` | Passed; removed generated build output. |
-| `./gradlew build` | Passed; compiled all main Java sources with `javac --release 17`. |
-| `./gradlew test` | Passed; compiled test sources and ran the custom headless logic suite. **35 checks passed.** |
-| `javac --release 17 -Xlint:all ...` | Passed with no warnings. |
-| Launch `com.lostvault.Main` under `xvfb-run` | Passed; the desktop window opened and remained responsive long enough to capture a screenshot. |
-| GUI smoke sequence | Passed at smoke-test scope: Main Menu rendered, Start New Expedition entered Level 1, and keyboard pause/menu/restart interaction returned to gameplay. |
-| Complete human-controlled playthrough | Not performed. The full level-to-level, Vault, treasure, and rescue-boat sequence was instead exercised by a deterministic model integration test. |
+```sh
+./gradlew clean
+./gradlew build
+./gradlew test
+```
 
-## Automated coverage
+Results: build/compilation passed; the dependency-free regression suite passed **50 checks**. Main sources compiled with `javac -Xlint:all` without warnings during verification.
 
-The 35 assertions cover normalized movement, AABB overlaps, unlock conditions, initial lives, single-collection gems and clues, hazard respawn/checkpoints, exhausted-life level restart, locked-level access, vault unlock and one-time treasure creation, rescue-boat gating, pause/resume, per-level gem/checkpoint/hazard data, ordered transitions, and a simulated full run through Victory.
+The 45 checks cover normalized movement, AABB overlap, unlock-condition rules, new-run initialization, lives, single gem/clue collection, checkpoint respawn, exhausted-life restart, locked-level rejection, Vault puzzle sequence, treasure uniqueness, boat gating, pause/resume, per-level data, ordered progression, Level 2 gate puzzle, final Vault puzzle, full model progression to Victory, NPC dialogue choices, key reward, secret cache reveal/reward, and map/inventory state toggles.
 
-## Outstanding deviations / limitations
+## Graphical verification
 
-- The requested LWJGL 3 / GLFW / OpenGL 3.3 renderer, GLSL shaders, and official Gradle Wrapper JAR are not included. Java2D/Swing is used for an offline-runnable implementation because the required build/runtime artifacts could not be fetched in this environment.
-- Audio and local save persistence are omitted optional features.
-- GUI smoke testing is not a substitute for a full human playthrough on a normal desktop.
+A graphical launch smoke test ran under Xvfb. A Java Robot click selected Start New Expedition and the screenshot confirmed that Level 1 rendered with the grid trail network, HUD objective, and minimap. The app remained alive until the smoke-test process was intentionally stopped. A complete manual playthrough by a human has **not** been performed, so this report does not claim that every route, puzzle placement, or UI interaction has passed manual verification.
 
+## Known deviations and remaining verification
 
-## Follow-up revision verification (2026-10-13)
-
-- `javac -Xlint:all -d build/classes/java/main src/main/java/com/lostvault/*.java` — passed with no compiler diagnostics.
-- `java -cp build/classes/java/main:build/classes/java/test com.lostvault.GameLogicTest` — all 35 checks passed.
-- Changes verified in source: orthogonal multi-branch path rendering, grid/junction visual cues, expanded NPC story dialogue, expanded clue text, README controls/story notes.
-- A fresh manual graphical playthrough of the revised layout was not performed in this pass.
+- Renderer is Java2D/Swing, not LWJGL 3 / GLFW / OpenGL 3.3 / GLSL 330.
+- No official Gradle Wrapper distribution is included; `gradlew` and `gradlew.bat` are JDK fallback scripts.
+- No background music, controller support, or complete save-state restoration.
+- Windows batch script behavior is implemented but was not executable in this Linux verification environment; it should be exercised on Windows.
+- A full manual three-level playthrough and balance/reachability review are still outstanding.
