@@ -1,0 +1,24 @@
+plugins { id 'java' }
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+
+repositories { mavenCentral() }
+
+// The game intentionally has no third-party runtime dependencies, so it can build offline.
+// Rendering currently uses Java2D because LWJGL/Gradle artifacts cannot be fetched in this environment.
+tasks.register('runGame', JavaExec) {
+    group = 'application'
+    description = 'Launch The Lost Vault'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.lostvault.Main'
+}
+
+tasks.register('logicTest', JavaExec) {
+    group = 'verification'
+    description = 'Run dependency-free gameplay logic tests'
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+    mainClass = 'com.lostvault.GameLogicTest'
+}
+
+// The project intentionally uses a dependency-free executable test harness rather than JUnit.
+tasks.named('test') { dependsOn tasks.named('logicTest') }
