@@ -30,3 +30,11 @@ The 35 assertions cover normalized movement, AABB overlaps, unlock conditions, i
 - The requested LWJGL 3 / GLFW / OpenGL 3.3 renderer, GLSL shaders, and official Gradle Wrapper JAR are not included. Java2D/Swing is used for an offline-runnable implementation because the required build/runtime artifacts could not be fetched in this environment.
 - Audio and local save persistence are omitted optional features.
 - GUI smoke testing is not a substitute for a full human playthrough on a normal desktop.
+
+
+## Follow-up revision verification (2026-10-13)
+
+- `javac -Xlint:all -d build/classes/java/main src/main/java/com/lostvault/*.java` — passed with no compiler diagnostics.
+- `java -cp build/classes/java/main:build/classes/java/test com.lostvault.GameLogicTest` — all 35 checks passed.
+- Changes verified in source: orthogonal multi-branch path rendering, grid/junction visual cues, expanded NPC story dialogue, expanded clue text, README controls/story notes.
+- A fresh manual graphical playthrough of the revised layout was not performed in this pass.

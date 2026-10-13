@@ -19,3 +19,11 @@ The `gradlew` shell script delegates to Gradle if installed; otherwise it provid
 - Gems and clues are retained on ordinary respawn; exhausting all lives restarts the current level and clears that level's clue/gem attempt progress.
 - Checkpoints are represented as one-use touch triggers, with the initial spawn as checkpoint 0.
 - Audio and save persistence are omitted because they are optional in the supplied specification.
+
+
+## October 2026 exploration/story revision
+
+- Replaced the three-segment diagonal trail with an orthogonal grid network: intersections, loops, optional branches, junction stones, and a subtle cartographer grid. The three level themes use different branching route arrangements.
+- Expanded the narrative into a connected mystery around Captain Elias Vale, the summoned storm, the Wave/Thorn/Sun clues, the betrayed tyrant, and the escape route. NPC dialogue now provides actionable field leads; clue fragments provide map and route hints.
+- Updated README controls and exploration instructions. Existing interaction, dialogue, and journal mechanics are reused; no external assets or dependencies were introduced.
+- Verification: Java source compilation with `javac -Xlint:all` and all 35 dependency-free gameplay regression checks were rerun after the changes.

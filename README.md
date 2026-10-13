@@ -1,6 +1,6 @@
 # The Lost Vault
 
-A single-player 2D treasure-hunt adventure in Java. Explore three hand-authored islands, collect gems and clue scrolls, avoid hazards, use checkpoints, unlock the ancient gate and Lost Vault, recover the treasure, and interact with the rescue boat to win.
+A single-player 2D treasure-hunt adventure in Java. Explore three hand-authored island regions through a branching, orthogonal grid of trails. Talk to survivors, inspect inscriptions, piece together the Wave/Thorn/Sun mystery in your journal, collect gems and clue scrolls, avoid hazards, unlock the ancient gate and Lost Vault, recover the treasure, and escape by rescue boat.
 
 ## Requirements
 
@@ -37,9 +37,14 @@ On Windows, `gradlew.bat` delegates to an installed Gradle distribution; the JDK
 |---|---|
 | Move | W/A/S/D or Arrow Keys |
 | Interact / collect / open | Space or Enter |
+| Expedition journal | J |
 | Pause / resume | Escape |
 | Navigate menus | Up/Down or W/S; Enter/Space to select |
 | Mouse | Click menu choices; click in-world to interact |
+
+## Story and exploration
+
+Captain Elias Vale sailed into a supernatural storm while chasing a crown hidden by sailors who defied a tyrant. A castaway, a lost cartographer, and the island Keeper reveal the story in pieces. The trails form a grid with intersections, loops, side routes, and risky shortcuts rather than one diagonal corridor. Explore side branches, then press **Space/Enter** near people, clue scrolls, gates, inscriptions, the Vault, and the boat. Press **J** to review your expedition journal and collected evidence.
 
 ## Objective
 
@@ -53,7 +58,7 @@ Each level starts with three lives. Hazards cost a life and respawn at the most 
 
 - `GameModel`: explicit game states, level progression, collectible state, unlock conditions, lives, checkpoints, hazards, and victory rules.
 - `Rect` / `UnlockCondition`: small deterministic, testable geometry and progression primitives.
-- `Main.GamePanel`: window lifecycle, keyboard/mouse input, camera, world rendering, HUD, menus, and simple hierarchical player animation.
+- `Main.GamePanel`: window lifecycle, keyboard/mouse input, camera, branching grid-trail rendering, HUD, menus, dialogue/journal panels, and simple hierarchical player animation.
 - `GameLogicTest`: dependency-free headless regression checks for core rules.
 
 Level layouts are hand-authored in `GameModel.createLevel`. Coordinates use world units with `(0,0)` at the top-left. The world is 1800 × 1200 units; the camera follows the player and clamps to those bounds.
